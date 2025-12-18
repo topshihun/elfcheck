@@ -37,5 +37,8 @@ fn changeMachine(expect_item_check: *ExpectItem, fmt: []const u8) bool {
 }
 
 fn diffMachine(real_item_check: *const RealItem, expect_item_check: *const ExpectItem) bool {
-    return real_item_check.machine == expect_item_check.machine;
+    if (expect_item_check.machine) |expect_machine| {
+        return real_item_check.machine == expect_machine;
+    }
+    return true;
 }
