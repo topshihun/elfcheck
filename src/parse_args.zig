@@ -4,7 +4,7 @@ const utils = @import("utils.zig");
 const check = @import("check.zig");
 const log = @import("log.zig");
 
-const ExpectItemCheck = check.ExpectItemCheck;
+const ExpectItems = check.ExpectItemCheck;
 
 const items_fns = check.items_fns;
 
@@ -15,15 +15,15 @@ const ArgPair = struct {
     fn split(fmt: []const u8) ?ArgPair {
         // split string with '='
         var eq_index: ?usize = null;
-        for(fmt, 0..) |c, index| {
-            if(c == '=') eq_index = index;
+        for (fmt, 0..) |c, index| {
+            if (c == '=') eq_index = index;
         }
 
-        if(eq_index) |index| {
-            if(index >= fmt.len) return null;
+        if (eq_index) |index| {
+            if (index >= fmt.len) return null;
             const key = fmt[0..index];
-            const value = fmt[index+1..fmt.len];
-            return ArgPair {
+            const value = fmt[index + 1 .. fmt.len];
+            return ArgPair{
                 .key = key,
                 .value = value,
             };
@@ -39,63 +39,64 @@ const CommonArg = struct {
     do: *const fn () void,
 };
 
-const common_args = [_]CommonArg {
-    CommonArg {
+const common_args = [_]CommonArg{
+    CommonArg{
         .names = &[_][]const u8{ "-h", "--help" },
         .do = argHelp,
     },
-    CommonArg {
-        .names = &[_][]const u8{ "-v" },
+    CommonArg{
+        .names = &[_][]const u8{"-v"},
         .do = argVersion,
     },
-    CommonArg {
-        .names = &[_][]const u8 { "-err" },
+    CommonArg{
+        .names = &[_][]const u8{"-err"},
         .do = argErr,
     },
-    CommonArg {
-        .names = &[_][]const u8 { "-warn" },
+    CommonArg{
+        .names = &[_][]const u8{"-warn"},
         .do = argWarn,
     },
-    CommonArg {
-        .names = &[_][]const u8 { "-info" },
+    CommonArg{
+        .names = &[_][]const u8{"-info"},
         .do = argInfo,
     },
 };
 
-const ParseArgsError = error {
+const ParseArgsError = error{
     InvalidArg,
     MultipleFile,
     HaveNotFile,
 };
 
-pub fn parseArgs() !struct { ExpectItemCheck, []const u8 } {
+pub fn parseArgs() !struct { ExpectItems, []const u8 } {
     const mem = std.mem;
 
     var args = process.args();
     _ = args.next();
-    var item_check: ExpectItemCheck = undefined;
+    var item_check: ExpectItems = undefined;
+
     // must have one file arg
     var file: ?[]const u8 = null;
-    while(args.next()) |arg| {
-        if(arg[0] == '-') {
+    while (args.next()) |arg| {
+        if (arg[0] == '-') {
             var invalid_arg = true;
-            for(common_args) |common_arg| {
-                for(common_arg.names) |name| {
-                    if(mem.eql(u8, arg, name)) {
+            for (common_args) |common_arg| {
+                for (common_arg.names) |name| {
+                    if (mem.eql(u8, arg, name)) {
                         common_arg.do();
                         invalid_arg = false;
                     }
                 }
             }
-            if(invalid_arg) {
+            if (invalid_arg) {
                 printInvalidArg(arg);
                 return error.InvalidArg;
             }
         } else {
-            if(ArgPair.split(arg)) |arg_pair| {
-                for(items_fns) |item_fns| {
-                    if(mem.eql(u8, arg_pair.key, item_fns.name)) {
-                        if(!item_fns.change_fn(&item_check, arg_pair.value)) {
+            if (ArgPair.split(arg)) |arg_pair| {
+                for (items_fns) |item_fns| {
+                    if (mem.eql(u8, arg_pair.key, item_fns.name)) {
+                        if (!item_fns.change_fn(&item_check, arg_pair.value)) {
                             printInvalidArg(arg);
                             return error.InvalidArg;
                         }
@@ -103,9 +104,9 @@ pub fn parseArgs() !struct { ExpectItemCheck, []const u8 } {
                 }
             } else {
                 // maybe file name
-                if(file) |_| {
+                if (file) |_| {
                     // multiple files
-                    log.err("mutiple file {s}", .{ arg });
+                    log.err("mutiple file {s}", .{arg});
                     return error.MultipleFile;
                 }
                 file = arg;
@@ -113,7 +114,7 @@ pub fn parseArgs() !struct { ExpectItemCheck, []const u8 } {
         }
     }
 
-    if(file) |f| {
+    if (file) |f| {
         return .{ item_check, f };
     } else {
         log.err("No file", .{});
@@ -133,30 +134,30 @@ fn printHelp() void {
     utils.printNoArgs("[input]\tThe path to the file to be checked.\n");
     utils.printNoArgs("\n");
     utils.printNoArgs("General Options:\n");
-    for(common_args) |common_arg| {
+    for (common_args) |common_arg| {
         utils.printNoArgs(" ");
-        for(common_arg.names, 1..) |name, i| {
-            utils.print("{s}", .{ name });
-            if(common_arg.names.len != i)
+        for (common_arg.names, 1..) |name, i| {
+            utils.print("{s}", .{name});
+            if (common_arg.names.len != i)
                 utils.printNoArgs(", ");
         }
-        utils.print("\t{s}.\n", .{ common_arg.describe });
+        utils.print("\t{s}.\n", .{common_arg.describe});
     }
     utils.printNoArgs("\n");
     utils.printNoArgs("Options:\n");
-    for(items_fns) |item| {
+    for (items_fns) |item| {
         utils.print(" {s}\t{s}\n", .{ item.name, item.describe });
     }
 }
 
 fn argVersion() void {
     const version = @import("elfcheck").version;
-    utils.print("version: {s}\n", .{ version });
+    utils.print("version: {s}\n", .{version});
     process.exit(0);
 }
 
 fn printInvalidArg(arg: []const u8) void {
-    log.err("Invalid arg: {s}", .{ arg });
+    log.err("Invalid arg: {s}", .{arg});
 }
 
 fn argErr() void {

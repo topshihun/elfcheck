@@ -2,10 +2,13 @@ const std = @import("std");
 const elf = std.elf;
 const mem = std.mem;
 
+const log = @import("log.zig");
+const utils = @import("utils.zig");
+
 pub const Item = struct {
     name: [:0]const u8,
     type: type,
-    default_value_ptr: ?*const anyopaque,
+    default_value_ptr: *const anyopaque,
 };
 
 /// change_fn:
@@ -36,10 +39,10 @@ pub const ExpectItemCheck = expect_type: {
     for (items, 0..) |item, i| {
         struct_fields[i] = .{
             .name = item.name,
-            .type = ?item.type,
+            .type = utils.optionType(item.type),
             .default_value_ptr = item.default_value_ptr,
             .is_comptime = false,
-            .alignment = @alignOf(item.type),
+            .alignment = @alignOf(utils.optionType(item.type)),
         };
     }
 
@@ -78,8 +81,10 @@ pub const RealItemCheck = real_type: {
 
 pub fn diff(real_item_checked: *const RealItemCheck, expect_item_checked: *const ExpectItemCheck) bool {
     for (items_fns) |item_fns| {
-        if (item_fns.diff_fn(real_item_checked, expect_item_checked))
+        if (!item_fns.diff_fn(real_item_checked, expect_item_checked)) {
+            log.warn("diff is false", .{});
             return false;
+        }
     }
     return true;
 }

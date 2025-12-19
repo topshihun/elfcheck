@@ -38,3 +38,10 @@ pub fn print_error(comptime fmt: []const u8, args: anytype) void {
 pub fn strEql(s1: []const u8, s2: []const u8) bool {
     return mem.eql(u8, s1, s2);
 }
+
+pub fn optionType(comptime T: type) type {
+    return union(enum) {
+        some: T,
+        none,
+    };
+}
