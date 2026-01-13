@@ -38,7 +38,7 @@ const ArgPair = struct {
     }
 
     test split {
-        const key_value = ArgPair.split("key:value") orelse return error.InvalidArg;
+        const key_value = ArgPair.split("key=value") orelse return error.InvalidArg;
         try std.testing.expectEqualStrings(key_value.key, "key");
         try std.testing.expectEqualStrings(key_value.value, "value");
     }

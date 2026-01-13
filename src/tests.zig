@@ -12,6 +12,6 @@ test utils {
     _ = utils;
 }
 
-// test parse_args {
-//     _ = parse_args;
-// }
+test parse_args {
+    _ = parse_args;
+}
