@@ -8,6 +8,11 @@ const ExpectItems = check.ExpectItemCheck;
 
 const items_fns = check.items_fns;
 
+// test all
+test {
+    std.testing.refAllDecls(@This());
+}
+
 const ArgPair = struct {
     key: []const u8,
     value: []const u8,
@@ -30,6 +35,12 @@ const ArgPair = struct {
         } else {
             return null;
         }
+    }
+
+    test split {
+        const key_value = ArgPair.split("key:value") orelse return error.InvalidArg;
+        try std.testing.expectEqualStrings(key_value.key, "key");
+        try std.testing.expectEqualStrings(key_value.value, "value");
     }
 };
 

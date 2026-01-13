@@ -39,6 +39,11 @@ pub fn strEql(s1: []const u8, s2: []const u8) bool {
     return mem.eql(u8, s1, s2);
 }
 
+test strEql {
+    try std.testing.expect(strEql("This is a test", "This is a test") == true);
+    try std.testing.expectEqual(strEql("This a false test", "Yes"), false);
+}
+
 pub fn optionType(comptime T: type) type {
     return union(enum) {
         some: T,
