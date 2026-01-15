@@ -4,7 +4,7 @@ const fs = std.fs;
 const mem = std.mem;
 const checked = @import("check.zig");
 
-const RealItemCheck = checked.RealItemCheck;
+const RealItems = checked.RealItems;
 
 const EI_NIDENT = 16;
 
@@ -13,7 +13,7 @@ const ReadElfError = error{
     InvalidClass,
 };
 
-pub fn readElf(file_path: []const u8) !RealItemCheck {
+pub fn readElf(file_path: []const u8) !RealItems {
     var file = fs.cwd().openFile(file_path, .{ .mode = .read_only, .lock = .none }) catch @panic("file open failed");
     defer file.close();
 
@@ -24,7 +24,7 @@ pub fn readElf(file_path: []const u8) !RealItemCheck {
         unreachable;
     };
 
-    var real_item_check: RealItemCheck = undefined;
+    var real_item_check: RealItems = undefined;
 
     // get is_64
     real_item_check.is_64 = header.is_64;

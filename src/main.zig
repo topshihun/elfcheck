@@ -5,7 +5,7 @@ const parseArgs = @import("parse_args.zig").parseArgs;
 const readElf = @import("read_elf.zig").readElf;
 const item_checked_diff = @import("check.zig").diff;
 
-const ExpectItems = @import("check.zig").ExpectItemCheck;
+const ExpectItems = @import("check.zig").ExpectItems;
 
 const DIFF_SUCCESS_CODE = 0;
 const DIFF_FAILED_CODE = 1;

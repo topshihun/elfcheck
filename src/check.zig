@@ -16,8 +16,8 @@ pub const Item = struct {
 pub const ItemFns = struct {
     name: []const u8,
     describe: []const u8 = "No describe",
-    change_fn: *const fn (*ExpectItemCheck, []const u8) bool,
-    diff_fn: *const fn (*const RealItemCheck, *const ExpectItemCheck) bool,
+    change_fn: *const fn (*ExpectItems, []const u8) bool,
+    diff_fn: *const fn (*const RealItems, *const ExpectItems) bool,
 };
 
 const is_64 = @import("check/is_64.zig");
@@ -33,20 +33,38 @@ pub const items_fns = [_]*const ItemFns{
     &machine.machine_fns,
 };
 
-pub const ExpectItemCheck = expect_type: {
+const EROption = enum {
+    expect,
+    real,
+};
+
+pub const ExpectItems = ERItemType(.expect);
+
+pub const RealItems = ERItemType(.real);
+
+fn ERItemType(er_option: EROption) type {
     var struct_fields: [items.len]std.builtin.Type.StructField = undefined;
 
     for (items, 0..) |item, i| {
+        const item_type = switch (er_option) {
+            .expect => utils.optionType(item.type),
+            .real => item.type,
+        };
+        const default_value_ptr = switch (er_option) {
+            .expect => item.default_value_ptr,
+            .real => null,
+        };
+
         struct_fields[i] = .{
             .name = item.name,
-            .type = utils.optionType(item.type),
-            .default_value_ptr = item.default_value_ptr,
+            .type = item_type,
+            .default_value_ptr = default_value_ptr,
             .is_comptime = false,
-            .alignment = @alignOf(utils.optionType(item.type)),
+            .alignment = @alignOf(item_type),
         };
     }
 
-    break :expect_type @Type(.{
+    return @Type(.{
         .@"struct" = .{
             .layout = .auto,
             .fields = &struct_fields,
@@ -54,32 +72,9 @@ pub const ExpectItemCheck = expect_type: {
             .is_tuple = false,
         },
     });
-};
+}
 
-pub const RealItemCheck = real_type: {
-    var struct_fields: [items.len]std.builtin.Type.StructField = undefined;
-
-    for (items, 0..) |item, i| {
-        struct_fields[i] = .{
-            .name = item.name,
-            .type = item.type,
-            .default_value_ptr = null,
-            .is_comptime = false,
-            .alignment = @alignOf(item.type),
-        };
-    }
-
-    break :real_type @Type(.{
-        .@"struct" = .{
-            .layout = .auto,
-            .fields = &struct_fields,
-            .decls = &.{},
-            .is_tuple = false,
-        },
-    });
-};
-
-pub fn diff(real_item_checked: *const RealItemCheck, expect_item_checked: *const ExpectItemCheck) bool {
+pub fn diff(real_item_checked: *const RealItems, expect_item_checked: *const ExpectItems) bool {
     for (items_fns) |item_fns| {
         if (!item_fns.diff_fn(real_item_checked, expect_item_checked)) {
             log.warn("diff is false", .{});

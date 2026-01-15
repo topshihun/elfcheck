@@ -4,8 +4,8 @@ const utils = @import("../utils.zig");
 const check = @import("../check.zig");
 const Item = check.Item;
 const ItemFns = check.ItemFns;
-const ExpectItem = check.ExpectItemCheck;
-const RealItem = check.RealItemCheck;
+const ExpectItems = check.ExpectItems;
+const RealItems = check.RealItems;
 
 const log = @import("../log.zig");
 
@@ -23,12 +23,12 @@ pub const is_64_fns = ItemFns{
     .diff_fn = &diffIs64,
 };
 
-fn changeIs64(item_check: *ExpectItem, value: []const u8) bool {
+fn changeIs64(expect_items: *ExpectItems, value: []const u8) bool {
     if (utils.strEql(value, "true")) {
-        item_check.is_64 = .{ .some = true };
+        expect_items.is_64 = .{ .some = true };
         log.info("is_64 change to true", .{});
     } else if (utils.strEql(value, "false")) {
-        item_check.is_64 = .{ .some = false };
+        expect_items.is_64 = .{ .some = false };
         log.info("is_64 change to false", .{});
     } else {
         log.err("{s} is invalid for is_64", .{value});
@@ -37,9 +37,9 @@ fn changeIs64(item_check: *ExpectItem, value: []const u8) bool {
     return true;
 }
 
-fn diffIs64(real_item_checked: *const RealItem, expect_item_checked: *const ExpectItem) bool {
-    if (expect_item_checked.is_64 == .some) {
-        if (real_item_checked.is_64 != expect_item_checked.is_64.some) {
+fn diffIs64(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
+    if (expect_items.is_64 == .some) {
+        if (real_items.is_64 != expect_items.is_64.some) {
             log.warn("is_64 is correct", .{});
             return false;
         }

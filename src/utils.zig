@@ -4,12 +4,19 @@ const mem = std.mem;
 const COLOR_RESET = "\x1b[0m";
 const FORE_COLOR_RED = "\x1b[31m";
 
+var stdout_buffer: [64]u8 = undefined;
+var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+const stdout = &stdout_writer.interface;
+
 pub fn print(comptime fmt: []const u8, args: anytype) void {
-    var stdout = std.fs.File.stdout().writer(&.{}).interface;
     stdout.print(fmt, args) catch |e| {
         std.debug.print("err:{any}\n", .{e});
         std.debug.print("Should print:\n", .{});
         std.debug.print(fmt, args);
+        unreachable;
+    };
+    stdout.flush() catch |e| {
+        std.debug.print("err:{any}\n", .{e});
         unreachable;
     };
 }

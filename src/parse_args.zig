@@ -4,7 +4,7 @@ const utils = @import("utils.zig");
 const check = @import("check.zig");
 const log = @import("log.zig");
 
-const ExpectItems = check.ExpectItemCheck;
+const ExpectItems = check.ExpectItems;
 
 const items_fns = check.items_fns;
 
