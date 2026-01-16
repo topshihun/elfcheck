@@ -26,10 +26,11 @@ pub fn readElf(file_path: []const u8) !RealItems {
 
     var real_item_check: RealItems = undefined;
 
-    // get is_64
+    // get header information
     real_item_check.is_64 = header.is_64;
-
-    // get machine
+    real_item_check.endian = header.endian;
+    real_item_check.os_abi = header.os_abi;
+    real_item_check.type = header.type;
     real_item_check.machine = header.machine;
 
     return real_item_check;

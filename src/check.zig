@@ -21,15 +21,24 @@ pub const ItemFns = struct {
 };
 
 const is_64 = @import("check/is_64.zig");
+const endian = @import("check/endian.zig");
+const os_abi = @import("check/os_abi.zig");
+const @"type" = @import("check/type.zig");
 const machine = @import("check/machine.zig");
 
 pub const items = [_]*const Item{
     &is_64.is_64_item,
+    &endian.endian_item,
+    &os_abi.os_abi_item,
+    &@"type".type_item,
     &machine.machine_item,
 };
 
 pub const items_fns = [_]*const ItemFns{
     &is_64.is_64_fns,
+    &endian.endian_fns,
+    &os_abi.os_abi_fns,
+    &@"type".type_fns,
     &machine.machine_fns,
 };
 
