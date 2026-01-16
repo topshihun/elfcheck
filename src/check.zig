@@ -17,7 +17,7 @@ pub const ItemFns = struct {
     name: []const u8,
     describe: []const u8 = "No describe",
     change_fn: *const fn (*ExpectItems, []const u8) bool,
-    diff_fn: *const fn (*const RealItems, *const ExpectItems) bool,
+    eq_fn: *const fn (*const RealItems, *const ExpectItems) bool,
 };
 
 const is_64 = @import("check/is_64.zig");
@@ -50,7 +50,7 @@ fn ERItemType(er_option: EROption) type {
             .expect => utils.optionType(item.type),
             .real => item.type,
         };
-        const default_value_ptr = switch (er_option) {
+        const default_value_ptr: ?*const anyopaque = switch (er_option) {
             .expect => item.default_value_ptr,
             .real => null,
         };
@@ -74,9 +74,9 @@ fn ERItemType(er_option: EROption) type {
     });
 }
 
-pub fn diff(real_item_checked: *const RealItems, expect_item_checked: *const ExpectItems) bool {
+pub fn eq(real_item_checked: *const RealItems, expect_item_checked: *const ExpectItems) bool {
     for (items_fns) |item_fns| {
-        if (!item_fns.diff_fn(real_item_checked, expect_item_checked)) {
+        if (!item_fns.eq_fn(real_item_checked, expect_item_checked)) {
             log.warn("diff is false", .{});
             return false;
         }

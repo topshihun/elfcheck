@@ -20,7 +20,7 @@ pub const is_64_item = Item{
 pub const is_64_fns = ItemFns{
     .name = "is_64",
     .change_fn = &changeIs64,
-    .diff_fn = &diffIs64,
+    .eq_fn = &eqIs64,
 };
 
 fn changeIs64(expect_items: *ExpectItems, value: []const u8) bool {
@@ -37,7 +37,7 @@ fn changeIs64(expect_items: *ExpectItems, value: []const u8) bool {
     return true;
 }
 
-fn diffIs64(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
+fn eqIs64(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
     if (expect_items.is_64 == .some) {
         if (real_items.is_64 != expect_items.is_64.some) {
             log.warn("is_64 is correct", .{});

@@ -3,7 +3,7 @@ const log = @import("log.zig");
 
 const parseArgs = @import("parse_args.zig").parseArgs;
 const readElf = @import("read_elf.zig").readElf;
-const item_checked_diff = @import("check.zig").diff;
+const itemEq = @import("check.zig").eq;
 
 const ExpectItems = @import("check.zig").ExpectItems;
 
@@ -25,7 +25,7 @@ pub fn main() u8 {
 
     const file_item_checked = readElf(file) catch return OTHER_ERROR_CODE;
     log.info("finish read elf", .{});
-    const diff_result = item_checked_diff(&file_item_checked, &arg_item_checked);
+    const diff_result = itemEq(&file_item_checked, &arg_item_checked);
     log.info("finish diff", .{});
     if (diff_result) {
         return DIFF_SUCCESS_CODE;

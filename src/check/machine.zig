@@ -22,7 +22,7 @@ pub const machine_item = Item{
 pub const machine_fns = ItemFns{
     .name = MACHINE,
     .change_fn = &changeMachine,
-    .diff_fn = &diffMachine,
+    .eq_fn = &eqMachine,
 };
 
 fn changeMachine(expect_items: *ExpectItems, fmt: []const u8) bool {
@@ -37,7 +37,7 @@ fn changeMachine(expect_items: *ExpectItems, fmt: []const u8) bool {
     return false;
 }
 
-fn diffMachine(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
+fn eqMachine(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
     if (expect_items.machine == .some) {
         if (real_items.machine != expect_items.machine.some) {
             log.warn("Machine is not correct", .{});
