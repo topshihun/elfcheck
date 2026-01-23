@@ -5,19 +5,21 @@ const mem = std.mem;
 const log = @import("log.zig");
 const utils = @import("utils.zig");
 
+// Item have to separate ItemFns
+// because deepdnecy loop error(Item -> ExpectItems -> Item)
 pub const Item = struct {
     name: [:0]const u8,
     type: type,
     default_value_ptr: *const anyopaque,
+    describe: []const u8 = "No describe",
 };
 
-/// change_fn:
-// TODO: change name, because describe
 pub const ItemFns = struct {
     name: []const u8,
-    describe: []const u8 = "No describe",
     change_fn: *const fn (*ExpectItems, []const u8) bool,
     eq_fn: *const fn (*const RealItems, *const ExpectItems) bool,
+    // T must be ExpectItems or RealItems
+    format_fn: *const fn (gpa: std.mem.Allocator, expect_items: *const ExpectItems) mem.Allocator.Error![]const u8,
 };
 
 const is_64 = @import("check/is_64.zig");
@@ -51,7 +53,7 @@ pub const ExpectItems = ERItemType(.expect);
 
 pub const RealItems = ERItemType(.real);
 
-fn ERItemType(er_option: EROption) type {
+fn ERItemType(comptime er_option: EROption) type {
     var struct_fields: [items.len]std.builtin.Type.StructField = undefined;
 
     for (items, 0..) |item, i| {

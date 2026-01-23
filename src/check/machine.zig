@@ -23,6 +23,7 @@ pub const machine_fns = ItemFns{
     .name = MACHINE,
     .change_fn = &changeMachine,
     .eq_fn = &eqMachine,
+    .format_fn = &formatMachine,
 };
 
 fn changeMachine(expect_items: *ExpectItems, fmt: []const u8) bool {
@@ -45,4 +46,11 @@ fn eqMachine(real_items: *const RealItems, expect_items: *const ExpectItems) boo
         }
     }
     return true;
+}
+
+fn formatMachine(gpa: std.mem.Allocator, expect_items: *const ExpectItems) ![]const u8 {
+    if (expect_items.machine == .some) {
+        return std.fmt.allocPrint(gpa, "some({s})", .{@tagName(expect_items.machine.some)});
+    }
+    return std.fmt.allocPrint(gpa, "none", .{});
 }

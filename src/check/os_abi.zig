@@ -22,6 +22,7 @@ pub const os_abi_fns: ItemFns = .{
     .name = OS_ABI,
     .change_fn = &changeOsAbi,
     .eq_fn = &eqOsAbi,
+    .format_fn = &formatOsAbi,
 };
 
 fn changeOsAbi(expect_items: *ExpectItems, fmt: []const u8) bool {
@@ -44,4 +45,11 @@ fn eqOsAbi(real_items: *const Realitems, expect_items: *const ExpectItems) bool 
         }
     }
     return true;
+}
+
+fn formatOsAbi(gpa: std.mem.Allocator, expect_items: *const ExpectItems) ![]const u8 {
+    if (expect_items.os_abi == .some) {
+        return std.fmt.allocPrint(gpa, "some({s})", .{@tagName(expect_items.os_abi.some)});
+    }
+    return std.fmt.allocPrint(gpa, "none", .{});
 }

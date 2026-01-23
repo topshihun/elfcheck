@@ -22,6 +22,7 @@ pub const type_fns: ItemFns = .{
     .name = TYPE,
     .change_fn = &changeType,
     .eq_fn = &eqType,
+    .format_fn = &formatType,
 };
 
 fn changeType(expect_items: *ExpectItems, fmt: []const u8) bool {
@@ -43,4 +44,11 @@ fn eqType(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
         }
     }
     return true;
+}
+
+fn formatType(gpa: std.mem.Allocator, expect_items: *const ExpectItems) ![]const u8 {
+    if (expect_items.type == .some) {
+        return std.fmt.allocPrint(gpa, "some({s})", .{@tagName(expect_items.type.some)});
+    }
+    return std.fmt.allocPrint(gpa, "none", .{});
 }

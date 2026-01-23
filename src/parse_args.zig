@@ -6,6 +6,7 @@ const log = @import("log.zig");
 
 const ExpectItems = check.ExpectItems;
 
+const items = check.items;
 const items_fns = check.items_fns;
 
 // test all
@@ -139,7 +140,6 @@ fn argHelp() void {
 }
 
 fn printHelp() void {
-    // TODO: comptime for help information.
     utils.printNoArgs("Usage: elfcheck [commond] [input]\n");
     utils.printNoArgs("\n");
     utils.printNoArgs("[input]\tThe path to the file to be checked.\n");
@@ -156,7 +156,7 @@ fn printHelp() void {
     }
     utils.printNoArgs("\n");
     utils.printNoArgs("Options:\n");
-    for (items_fns) |item| {
+    inline for (items) |item| {
         utils.print(" {s}\t{s}\n", .{ item.name, item.describe });
     }
 }

@@ -21,6 +21,7 @@ pub const is_64_fns = ItemFns{
     .name = "is_64",
     .change_fn = &changeIs64,
     .eq_fn = &eqIs64,
+    .format_fn = &formatIs64,
 };
 
 fn changeIs64(expect_items: *ExpectItems, value: []const u8) bool {
@@ -45,4 +46,11 @@ fn eqIs64(real_items: *const RealItems, expect_items: *const ExpectItems) bool {
         }
     }
     return true;
+}
+
+fn formatIs64(gpa: std.mem.Allocator, expect_items: *const ExpectItems) ![]const u8 {
+    if (expect_items.is_64 == .some) {
+        return std.fmt.allocPrint(gpa, "some({any})", .{expect_items.is_64.some});
+    }
+    return std.fmt.allocPrint(gpa, "none", .{});
 }
