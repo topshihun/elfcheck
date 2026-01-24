@@ -16,6 +16,7 @@ pub const os_abi_item: Item = .{
     .name = OS_ABI,
     .type = elf.OSABI,
     .default_value_ptr = &OPTION_OS_ABI,
+    .describe = "zig reference: https://ziglang.org/documentation/0.15.2/std/#std.elf.OSABI",
 };
 
 pub const os_abi_fns: ItemFns = .{

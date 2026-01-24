@@ -15,6 +15,7 @@ pub const is_64_item = Item{
     .name = "is_64",
     .type = bool,
     .default_value_ptr = &OPTION_BOOL_DEFAULT,
+    .describe = "true, false",
 };
 
 pub const is_64_fns = ItemFns{

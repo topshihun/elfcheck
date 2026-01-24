@@ -17,6 +17,7 @@ pub const machine_item = Item{
     .name = MACHINE,
     .type = elf.EM,
     .default_value_ptr = &OPTION_EM_DEFAULT,
+    .describe = "zig refernece: https://ziglang.org/documentation/0.15.2/std/#std.elf.EM",
 };
 
 pub const machine_fns = ItemFns{

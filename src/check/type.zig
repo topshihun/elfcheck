@@ -16,6 +16,7 @@ pub const type_item: Item = .{
     .name = TYPE,
     .type = elf.ET,
     .default_value_ptr = &OPTION_TYPE,
+    .describe = "zig reference: https://ziglang.org/documentation/0.15.2/std/#std.elf.ET",
 };
 
 pub const type_fns: ItemFns = .{

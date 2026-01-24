@@ -54,22 +54,27 @@ const CommonArg = struct {
 const common_args = [_]CommonArg{
     CommonArg{
         .names = &[_][]const u8{ "-h", "--help" },
+        .describe = "Print help information",
         .do = argHelp,
     },
     CommonArg{
         .names = &[_][]const u8{"-v"},
+        .describe = "Print version",
         .do = argVersion,
     },
     CommonArg{
         .names = &[_][]const u8{"-err"},
+        .describe = "Set level to err",
         .do = argErr,
     },
     CommonArg{
         .names = &[_][]const u8{"-warn"},
+        .describe = "Set level to warn",
         .do = argWarn,
     },
     CommonArg{
         .names = &[_][]const u8{"-info"},
+        .describe = "Set level to info",
         .do = argInfo,
     },
 };
