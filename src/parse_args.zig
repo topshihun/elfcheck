@@ -85,7 +85,7 @@ pub fn parseArgs() !struct { ExpectItems, []const u8 } {
 
     var args = process.args();
     _ = args.next();
-    var item_check: ExpectItems = undefined;
+    var item_check: ExpectItems = .{};
 
     // must have one file arg
     var file: ?[]const u8 = null;
