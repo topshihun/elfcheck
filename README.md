@@ -4,12 +4,26 @@ Check the information of ELF file and return result.
 
 Always be used in bash or others scriptlang.
 
-## Usage
+## Begining
+
+Requires: [zig](https://ziglang.org)
+
+### Download source and compile
+
+Download: `git clone https://github.com/topshihun/elfcheck.git`
+
+Compile:
+- `cd elfcheck`
+- `zig build`
+
+### Run
 
 Can use '-h' to print help information.
 ```sh
 elfcheck -h
 ```
+
+## Exmples
 
 Check if the `elf/file` is 64 bit and X86_64 machine.
 ```sh
