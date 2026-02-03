@@ -58,7 +58,7 @@ const common_args = [_]CommonArg{
         .do = argHelp,
     },
     CommonArg{
-        .names = &[_][]const u8{"-v"},
+        .names = &[_][]const u8{ "-v", "--version" },
         .describe = "Print version",
         .do = argVersion,
     },
@@ -79,6 +79,20 @@ const common_args = [_]CommonArg{
     },
 };
 
+const ArgsWithArg = struct {
+    name: []const u8,
+    describe: []const u8 = "No describe",
+    do: *const fn ([]const u8) void,
+};
+
+const args_with_args = [_]ArgsWithArg{
+    .{
+        .name = "-values",
+        .describe = "Print possible values of check items",
+        .do = printValueOfCheckItem,
+    },
+};
+
 const ParseArgsError = error{
     InvalidArg,
     MultipleFile,
@@ -89,7 +103,9 @@ pub fn parseArgs() !struct { ExpectItems, []const u8 } {
     const mem = std.mem;
 
     var args = process.args();
+    // skip self
     _ = args.next();
+
     var item_check: ExpectItems = .{};
 
     // must have one file arg
@@ -102,6 +118,16 @@ pub fn parseArgs() !struct { ExpectItems, []const u8 } {
                     if (mem.eql(u8, arg, name)) {
                         common_arg.do();
                         invalid_arg = false;
+                    }
+                }
+            }
+            for (args_with_args) |args_with_arg| {
+                if (std.mem.eql(u8, arg, args_with_arg.name)) {
+                    // get next arg
+                    if (args.next()) |arg_next| {
+                        args_with_arg.do(arg_next);
+                        invalid_arg = false;
+                        break;
                     }
                 }
             }
@@ -145,7 +171,7 @@ fn argHelp() void {
 }
 
 fn printHelp() void {
-    utils.printNoArgs("Usage: elfcheck [commond] [input]\n");
+    utils.printNoArgs("Usage: elfcheck [commonds] [input]\n");
     utils.printNoArgs("\n");
     utils.printNoArgs("[input]\tThe path to the file to be checked.\n");
     utils.printNoArgs("\n");
@@ -160,9 +186,14 @@ fn printHelp() void {
         utils.print("\t{s}.\n", .{common_arg.describe});
     }
     utils.printNoArgs("\n");
+    utils.printNoArgs("Arg Options:\n");
+    for (args_with_args) |args_with_arg| {
+        utils.print(" {s}\t{s}\n", .{ args_with_arg.name, args_with_arg.describe });
+    }
+    utils.printNoArgs("\n");
     utils.printNoArgs("Options:\n");
     inline for (items) |item| {
-        utils.print(" {s}\t{s}\n", .{ item.name, item.describe });
+        utils.print(" {s}\t{s}\n", .{ item.name, item.short_describe });
     }
 }
 
@@ -186,4 +217,18 @@ fn argWarn() void {
 
 fn argInfo() void {
     log.level = .info;
+}
+
+fn printValueOfCheckItem(name: []const u8) void {
+    inline for (items) |item| {
+        if (std.mem.eql(u8, name, item.name)) {
+            utils.print("{s} values:\n", .{name});
+            for (item.values) |value| {
+                utils.print("\t{s}\n", .{value});
+            }
+            process.exit(0);
+        }
+    }
+    utils.print("No Item: {s}\n", .{name});
+    process.exit(0);
 }

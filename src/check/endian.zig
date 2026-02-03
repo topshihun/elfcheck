@@ -15,7 +15,8 @@ pub const endian_item: Item = .{
     .name = ENDIAN,
     .type = std.builtin.Endian,
     .default_value_ptr = &OPTION_ENDIAN,
-    .describe = "little, big",
+    .short_describe = "little, big",
+    .values = &[_][]const u8{ "little", "big" },
 };
 
 pub const endian_fns: ItemFns = .{

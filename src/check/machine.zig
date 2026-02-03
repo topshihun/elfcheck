@@ -17,8 +17,13 @@ pub const machine_item = Item{
     .name = MACHINE,
     .type = elf.EM,
     .default_value_ptr = &OPTION_EM_DEFAULT,
-    .describe = "zig refernece: https://ziglang.org/documentation/0.15.2/std/#std.elf.EM",
+    .short_describe = "zig refernece: https://ziglang.org/documentation/0.15.2/std/#std.elf.EM",
+    .values = valuesMachine(),
 };
+
+fn valuesMachine() []const []const u8 {
+    return std.meta.fieldNames(elf.EM);
+}
 
 pub const machine_fns = ItemFns{
     .name = MACHINE,

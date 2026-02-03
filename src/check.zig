@@ -8,17 +8,18 @@ const utils = @import("utils.zig");
 // Item have to separate ItemFns
 // because deepdnecy loop error(Item -> ExpectItems -> Item)
 pub const Item = struct {
-    name: [:0]const u8,
+    name: []const u8,
     type: type,
     default_value_ptr: *const anyopaque,
-    describe: []const u8 = "No describe",
+    short_describe: []const u8 = "No short describe",
+    values: []const []const u8 = &[_][]const u8{"No Value"},
 };
 
 pub const ItemFns = struct {
     name: []const u8,
     change_fn: *const fn (*ExpectItems, []const u8) bool,
     eq_fn: *const fn (*const RealItems, *const ExpectItems) bool,
-    // T must be ExpectItems or RealItems
+    // Return current value
     format_fn: *const fn (gpa: std.mem.Allocator, expect_items: *const ExpectItems) mem.Allocator.Error![]const u8,
 };
 
@@ -50,7 +51,6 @@ const EROption = enum {
 };
 
 pub const ExpectItems = ERItemType(.expect);
-
 pub const RealItems = ERItemType(.real);
 
 fn ERItemType(comptime er_option: EROption) type {
@@ -66,8 +66,10 @@ fn ERItemType(comptime er_option: EROption) type {
             .real => null,
         };
 
+        const name: [:0]const u8 = item.name[0..item.name.len :0];
+
         struct_fields[i] = .{
-            .name = item.name,
+            .name = name,
             .type = item_type,
             .default_value_ptr = default_value_ptr,
             .is_comptime = false,
